@@ -5,7 +5,7 @@ import { connect } from 'mongoose';
 import MovieModel from './model';
 
 // @ts-ignore
-const data = require('../data.json') as typeof import('../data.json');
+const data = require('../data.json') as typeof import('../data2.json');
 // @ts-ignore
 const genres = require('../genres.json') as typeof import('../genres.json');
 
@@ -45,7 +45,7 @@ const reqApi = (name: string) => api.get<SearchResults>('/search/movie?query=' +
 
 // @ts-ignore // mongoose connect
 connect(process.env.MONGO_URI!, {}).then(() => {
-    data.forEach(async (e, key) => { try {
+    data.slice(0, 10).forEach((e, k) => setTimeout(async () => { try {
         const res = await reqApi(e.name);
         const {
             title,
@@ -81,10 +81,8 @@ connect(process.env.MONGO_URI!, {}).then(() => {
             author: e.author,
             time: e.time,
         });
-
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        console.log(key);
+        console.log("Added:", e.name);
     } catch (err) {
         console.error("An error has occured:", e.name);
-    }});
+    }}, k*200));
 });
