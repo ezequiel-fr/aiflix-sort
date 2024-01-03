@@ -45,7 +45,7 @@ const reqApi = (name: string) => api.get<SearchResults>('/search/movie?query=' +
 
 // @ts-ignore // mongoose connect
 connect(process.env.MONGO_URI!, {}).then(() => {
-    data.slice(0, 10).forEach((e, k) => setTimeout(async () => { try {
+    data.forEach((e, k) => setTimeout(async () => { try {
         const res = await reqApi(e.name);
         const {
             title,
