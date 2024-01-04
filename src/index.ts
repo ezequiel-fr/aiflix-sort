@@ -4,6 +4,8 @@ import { connect } from 'mongoose';
 
 import MovieModel from './model';
 
+import 'colors';
+
 // @ts-ignore
 const data = require('../data.json') as typeof import('../data2.json');
 // @ts-ignore
@@ -41,7 +43,8 @@ const api = axios.create({
     },
 });
 
-const reqApi = (name: string) => api.get<SearchResults>('/search/movie?query=' + name);
+const reqApi = (name: string) =>
+    api.get<SearchResults>('/search/movie?language=fr-FR&page=1&query=' + name);
 
 // @ts-ignore // mongoose connect
 connect(process.env.MONGO_URI!, {}).then(() => {
@@ -65,7 +68,17 @@ connect(process.env.MONGO_URI!, {}).then(() => {
             genres.find(v => v.id === g)?.name || "0"
         )).filter(e => e !== "0");
 
-        await MovieModel.create({
+        const existingMovie = await MovieModel.findOne({ $or: [
+            { title: e.name },
+            { original_title: e.name },
+        ]}, '_id');
+
+        if (existingMovie) await existingMovie.updateOne({
+            title,
+            description: overview,
+            updatedAt: new Date(),
+        });
+        else await MovieModel.create({
             title,
             link: e.uqload,
             backdrop_path,
@@ -81,8 +94,13 @@ connect(process.env.MONGO_URI!, {}).then(() => {
             author: e.author,
             time: e.time,
         });
-        console.log("Added:", e.name);
+
+        console.log(
+            k.toString().padStart(4, '0').yellow,
+            (existingMovie ? "Updated:" : "Added:").cyan,
+            e.name.white,
+        );
     } catch (err) {
         console.error("An error has occured:", e.name);
-    }}, k*200));
+    }}, k*250));
 });

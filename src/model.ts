@@ -16,6 +16,7 @@ const MovieSchema = new Schema({
     tmdb_id: { type: Number, required: true },
     author: { type: String, required: true },
     time: { type: String, required: true },
+    updatedAt: { type: Date, default: new Date() },
 });
 
 const MovieModel = model('movies', MovieSchema);
