@@ -7,7 +7,7 @@ const MovieSchema = new Schema({
     poster_path: { type: String, required: true },
     description: { type: String, required: true },
     categories: { type: [String], required: true },
-    actors: { type: [String], required: true },
+    actors: { type: [String], default: [] },
     addedAt: { type: Date, default: new Date() },
     nsfw: { type: Boolean, required: true },
     release_date: { type: String, required: true },

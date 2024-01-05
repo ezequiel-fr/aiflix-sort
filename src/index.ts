@@ -7,7 +7,7 @@ import MovieModel from './model';
 import 'colors';
 
 // @ts-ignore
-const data = require('../data.json') as typeof import('../data2.json');
+const data = require('../data.json') as { name: string, link: string }[];
 // @ts-ignore
 const genres = require('../genres.json') as typeof import('../genres.json');
 
@@ -71,6 +71,7 @@ connect(process.env.MONGO_URI!, {}).then(() => {
         const existingMovie = await MovieModel.findOne({ $or: [
             { title: e.name },
             { original_title: e.name },
+            { link: e.link },
         ]}, '_id');
 
         if (existingMovie) await existingMovie.updateOne({
@@ -80,19 +81,19 @@ connect(process.env.MONGO_URI!, {}).then(() => {
         });
         else await MovieModel.create({
             title,
-            link: e.uqload,
+            link: e.link,
             backdrop_path,
             poster_path,
             description: overview,
             categories: filmGenres,
-            actors: e.actors.split(', '),
+            actors: [],
             nsfw: adult,
             release_date,
             original_title,
             original_language,
             tmdb_id: id,
-            author: e.author,
-            time: e.time,
+            author: "Unknown",
+            time: "Unknown",
         });
 
         console.log(
